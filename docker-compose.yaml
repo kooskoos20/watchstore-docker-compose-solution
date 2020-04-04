@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+  backend:
+    build: "~/helios-watchstore-backend-master/"
+    image: "backend"
+    networks: 
+      - "app"
+    depends_on:
+      - "pgdb"
+
+  pgdb:
+    image: "postgres"
+    networks:
+      - "app"
+    environment:
+      POSTGRES_USER: interleap
+      POSTGRES_PASSWORD: learn_docker
+      POSTGRES_DB: watchstore
+
+  frontend:
+    build: "~/helios-watchstore-frontend-master/"
+    image: "frontend"
+    networks:
+      - "app"
+
+  webserver:
+    image: "nginx"
+    networks:
+      - "app"
+    volumes:
+      - "~/nginx-master:/etc/nginx/conf.d/"
+    ports:
+      - "80:80"
+    depends_on:
+      - "frontend"
+      - "backend"
+
+networks:
+  app:
+    driver: "bridge"
